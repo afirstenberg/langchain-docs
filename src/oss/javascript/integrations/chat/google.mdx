@@ -50,6 +50,17 @@ Once you have your API key, you can set it as an environment variable:
 export GOOGLE_API_KEY="your-api-key"
 ```
 
+Or you can pass it directly to the model constructor:
+
+```typescript
+import { ChatGoogle } from "@langchain/google";
+
+const model = new ChatGoogle({
+  apiKey: "your-api-key",
+  model: "gemini-2.5-flash",
+});
+```
+
 ### Credentials through Vertex AI Express Mode (API Key)
 
 Vertex AI also supports [Express Mode](https://cloud.google.com/vertex-ai/docs/start/introduction-unified-platform#express-mode), 
@@ -69,6 +80,7 @@ type as `gcp` when instantiating the model.
 
 For production environments on Google Cloud, it is recommended to use 
 [Application Default Credentials (ADC)](https://cloud.google.com/docs/authentication/provide-credentials-adc).
+This is supported in Node.js environments.
 
 If you are running on a local machine, you can set up ADC by installing the 
 [Google Cloud SDK](https://cloud.google.com/sdk) and running:
@@ -86,10 +98,16 @@ export GOOGLE_APPLICATION_CREDENTIALS="/path/to/your/service-account-key.json"
 
 ### Credentials through Vertex AI (OAuth saved credentials)
 
-If you want to provide credentials directly in your code, you can use the 
-`credentials` or `googleAuthOptions` parameters when instantiating the model. 
-This is useful for web environments or when you have the credentials 
-stored in a database or vault.
+If you are running in a web environment or want to provide credentials directly,
+you can use the `GOOGLE_CLOUD_CREDENTIALS` environment variable. This should 
+contain the **content** of your service account key file (not the path).
+
+```bash
+export GOOGLE_CLOUD_CREDENTIALS='{"type":"service_account","project_id":"your-project-id",...}'
+```
+
+You can also provide these credentials directly in your code using the 
+`credentials` parameter.
 
 ```typescript
 const model = new ChatGoogle({
