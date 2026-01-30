@@ -305,6 +305,111 @@ console.log(res.text);
 
 ## Multimodal Requests
 
+The `ChatGoogle` model supports multimodal requests, allowing you to send images, 
+audio, and video along with text. You can use the `contentBlocks` field in your 
+messages to provide these inputs in a structured way.
+
+### Images
+
+```typescript
+import { ChatGoogle } from "@langchain/google";
+import { HumanMessage } from "@langchain/core/messages";
+import * as fs from "fs";
+
+const llm = new ChatGoogle({
+  model: "gemini-2.5-flash",
+});
+
+const image = fs.readFileSync("./hotdog.jpg").toString("base64");
+
+const res = await llm.invoke([
+  new HumanMessage({
+    contentBlocks: [
+      {
+        type: "text",
+        text: "What is in this image?",
+      },
+      {
+        type: "image",
+        mimeType: "image/jpeg",
+        data: image,
+      },
+    ],
+  }),
+]);
+
+console.log(res.text);
+```
+
+### Audio
+
+```typescript
+const audio = fs.readFileSync("./speech.wav").toString("base64");
+
+const res = await llm.invoke([
+  new HumanMessage({
+    contentBlocks: [
+      {
+        type: "text",
+        text: "Summarize this audio.",
+      },
+      {
+        type: "audio",
+        mimeType: "audio/wav",
+        data: audio,
+      },
+    ],
+  }),
+]);
+
+console.log(res.text);
+```
+
+### Video
+
+```typescript
+const video = fs.readFileSync("./movie.mp4").toString("base64");
+
+const res = await llm.invoke([
+  new HumanMessage({
+    contentBlocks: [
+      {
+        type: "text",
+        text: "Describe the video.",
+      },
+      {
+        type: "video",
+        mimeType: "video/mp4",
+        data: video,
+      },
+    ],
+  }),
+]);
+
+console.log(res.text);
+```
+
 ## Image Generation with Nano Banana and Nano Banana Pro
+
+To generate images, you need to use a model that supports it (such as 
+`gemini-2.5-flash-image`) and configure the `responseModalities` to 
+include "IMAGE".
+
+```typescript
+import { ChatGoogle } from "@langchain/google";
+
+const llm = new ChatGoogle({
+  model: "gemini-2.5-flash-image",
+  responseModalities: ["IMAGE", "TEXT"],
+});
+
+const res = await llm.invoke(
+  "I would like to see a drawing of a house with the sun shining overhead. Drawn in crayon."
+);
+
+// Generated images are returned in the contentBlocks of the message
+const imageBlocks = res.contentBlocks.filter((block) => block.type === "file");
+console.log(imageBlocks);
+```
 
 ## API Reference
