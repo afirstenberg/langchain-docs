@@ -230,8 +230,12 @@ reducing hallucinations and providing more up-to-date responses.
 
 ### Grounding with Google Search
 
-You can use the `googleSearchRetrieval` tool to ground responses with Google Search.
+You can use the `googleSearch` tool to ground responses with Google Search.
 This is useful for questions about current events or specific facts.
+
+<Note>
+  The `googleSearchRetrieval` tool is maintained for backwards compatibility, but `googleSearch` is preferred.
+</Note>
 
 ```typescript
 import { ChatGoogle } from "@langchain/google";
@@ -240,12 +244,7 @@ const llm = new ChatGoogle({
   model: "gemini-2.5-flash",
 }).bindTools([
   {
-    googleSearchRetrieval: {
-      dynamicRetrievalConfig: {
-        mode: "MODE_DYNAMIC",
-        dynamicThreshold: 0.7,
-      },
-    },
+    googleSearch: {},
   },
 ]);
 
@@ -255,14 +254,13 @@ console.log(res.text);
 
 ### Grounding with URL Retrieval
 
-You can also ground responses using a specific URL. This is supported 
-on some models (e.g. `gemini-2.0-flash`).
+You can also ground responses using a specific URL.
 
 ```typescript
 import { ChatGoogle } from "@langchain/google";
 
 const llm = new ChatGoogle({
-  model: "gemini-2.0-flash",
+  model: "gemini-2.5-flash",
 }).bindTools([
   {
     urlContext: {},
