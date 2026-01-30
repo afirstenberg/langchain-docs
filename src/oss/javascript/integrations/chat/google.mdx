@@ -174,7 +174,7 @@ The model will automatically determine whether to use the Google AI API or Verte
 ### Google AI (AI Studio)
 
 ```typescript
-const model = new ChatGoogle({
+const llm = new ChatGoogle({
   model: "gemini-2.5-flash",
   maxRetries: 2,
   // apiKey: "...", // Optional if GOOGLE_API_KEY is set
@@ -184,7 +184,7 @@ const model = new ChatGoogle({
 ### Vertex AI
 
 ```typescript
-const model = new ChatGoogle({
+const llm = new ChatGoogle({
   model: "gemini-2.5-flash",
   // credentials: { ... }, // Optional if using ADC or GOOGLE_CLOUD_CREDENTIALS
 });
@@ -195,7 +195,7 @@ const model = new ChatGoogle({
 To use Vertex AI with an API key (Express Mode), you must explicitly set the `platformType`.
 
 ```typescript
-const model = new ChatGoogle({
+const llm = new ChatGoogle({
   model: "gemini-2.5-flash",
   platformType: "gcp",
   // apiKey: "...", // Optional if GOOGLE_API_KEY is set
