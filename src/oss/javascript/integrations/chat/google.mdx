@@ -40,11 +40,75 @@ Note that while logprobs are supported, Gemini has fairly restricted usage of th
 
 ### Credentials through AI Studio (API Key)
 
+To use the model through Google AI Studio (sometimes called the Generative AI
+API), you will need an API key. You can obtain one from the
+[Google AI Studio](https://aistudio.google.com/app/apikey).
+
+Once you have your API key, you can set it as an environment variable:
+
+```bash
+export GOOGLE_API_KEY="your-api-key"
+```
+
 ### Credentials through Vertex AI Express Mode (API Key)
+
+Vertex AI also supports [Express Mode](https://cloud.google.com/vertex-ai/docs/start/introduction-unified-platform#express-mode), 
+which allows you to use an API key for authentication. You can obtain a Vertex AI 
+API key from the [Google Cloud Console](https://console.cloud.google.com/vertex-ai/studio/api-key).
+
+Once you have your API key, you can set it as an environment variable:
+
+```bash
+export GOOGLE_API_KEY="your-api-key"
+```
+
+When using Vertex AI Express Mode, you will also need to specify the platform 
+type as `gcp` when instantiating the model.
 
 ### Credentials through Vertex AI (OAuth Application Default Credentials / ADC)
 
+For production environments on Google Cloud, it is recommended to use 
+[Application Default Credentials (ADC)](https://cloud.google.com/docs/authentication/provide-credentials-adc).
+
+If you are running on a local machine, you can set up ADC by installing the 
+[Google Cloud SDK](https://cloud.google.com/sdk) and running:
+
+```bash
+gcloud auth application-default login
+```
+
+Alternatively, you can set the `GOOGLE_APPLICATION_CREDENTIALS` environment 
+variable to the path of your service account key file:
+
+```bash
+export GOOGLE_APPLICATION_CREDENTIALS="/path/to/your/service-account-key.json"
+```
+
 ### Credentials through Vertex AI (OAuth saved credentials)
+
+If you want to provide credentials directly in your code, you can use the 
+`credentials` or `googleAuthOptions` parameters when instantiating the model. 
+This is useful for web environments or when you have the credentials 
+stored in a database or vault.
+
+```typescript
+const model = new ChatGoogle({
+  model: "gemini-2.5-flash",
+  platformType: "gcp",
+  credentials: {
+    type: "service_account",
+    project_id: "your-project-id",
+    private_key_id: "your-private-key-id",
+    private_key: "your-private-key",
+    client_email: "your-service-account-email",
+    client_id: "your-client-id",
+    auth_uri: "https://accounts.google.com/o/oauth2/auth",
+    token_uri: "https://oauth2.googleapis.com/token",
+    auth_provider_x509_cert_url: "https://www.googleapis.com/oauth2/v1/certs",
+    client_x509_cert_url: "your-cert-url",
+  }
+});
+```
 
 ### Tracing
 
