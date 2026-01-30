@@ -55,7 +55,7 @@ Or you can pass it directly to the model constructor:
 ```typescript
 import { ChatGoogle } from "@langchain/google";
 
-const model = new ChatGoogle({
+const llm = new ChatGoogle({
   apiKey: "your-api-key",
   model: "gemini-2.5-flash",
 });
@@ -110,7 +110,7 @@ You can also provide these credentials directly in your code using the
 `credentials` parameter.
 
 ```typescript
-const model = new ChatGoogle({
+const llm = new ChatGoogle({
   model: "gemini-2.5-flash",
   platformType: "gcp",
   credentials: {
@@ -156,7 +156,72 @@ pnpm add @langchain/google @langchain/core
 
 ## Instantiation
 
+The import path differs depending on whether you are running in a Node.js environment or a Web/Edge environment.
+
+<CodeGroup>
+```typescript Node.js
+import { ChatGoogle } from "@langchain/google/node";
+```
+```typescript Web/Edge
+import { ChatGoogle } from "@langchain/google";
+```
+</CodeGroup>
+
+The model will automatically determine whether to use the Google AI API or Vertex AI based on your configuration:
+- If you provide an `apiKey` (or set `GOOGLE_API_KEY`), it defaults to Google AI.
+- If you provide `credentials` (or set `GOOGLE_APPLICATION_CREDENTIALS` / `GOOGLE_CLOUD_CREDENTIALS` in Node), it defaults to Vertex AI.
+
+### Google AI (AI Studio)
+
+```typescript
+const model = new ChatGoogle({
+  model: "gemini-2.5-flash",
+  maxRetries: 2,
+  // apiKey: "...", // Optional if GOOGLE_API_KEY is set
+});
+```
+
+### Vertex AI
+
+```typescript
+const model = new ChatGoogle({
+  model: "gemini-2.5-flash",
+  // credentials: { ... }, // Optional if using ADC or GOOGLE_CLOUD_CREDENTIALS
+});
+```
+
+### Vertex AI Express Mode
+
+To use Vertex AI with an API key (Express Mode), you must explicitly set the `platformType`.
+
+```typescript
+const model = new ChatGoogle({
+  model: "gemini-2.5-flash",
+  platformType: "gcp",
+  // apiKey: "...", // Optional if GOOGLE_API_KEY is set
+});
+```
+
 ## Invocation
+
+```typescript
+import { HumanMessage, SystemMessage } from "@langchain/core/messages";
+
+const aiMsg = await llm.invoke([
+  new SystemMessage(
+    "You are a helpful assistant that translates English to French. Translate the user sentence."
+  ),
+  new HumanMessage("I love programming."),
+]);
+```
+
+```typescript
+console.log(aiMsg.content);
+```
+
+```text
+J'adore programmer.
+```
 
 ## Grounding Results
 
