@@ -617,6 +617,9 @@ The `speechConfig` can be a
 but for most cases you just need to provide a string with a prebuilt 
 [voice name](https://ai.google.dev/gemini-api/docs/speech-generation#voices).
 
+Many models return audio in raw PCM format (`audio/L16`), which requires a 
+WAV header to be playable by most media players.
+
 ```typescript
 import { ChatGoogle } from "@langchain/google";
 import * as fs from "fs";
@@ -629,15 +632,40 @@ const llm = new ChatGoogle({
 
 const res = await llm.invoke("Say cheerfully: Have a wonderful day!");
 
+// Function to add a WAV header to raw PCM data
+function addWavHeader(pcmData: Buffer, sampleRate = 24000) {
+  const header = Buffer.alloc(44);
+  header.write("RIFF", 0);
+  header.writeUInt32LE(36 + pcmData.length, 4);
+  header.write("WAVE", 8);
+  header.write("fmt ", 12);
+  header.writeUInt32LE(16, 16);
+  header.writeUInt16LE(1, 20); // PCM
+  header.writeUInt16LE(1, 22); // Mono
+  header.writeUInt32LE(sampleRate, 24);
+  header.writeUInt32LE(sampleRate * 2, 28); // Byte rate (16-bit mono)
+  header.writeUInt16LE(2, 32); // Block align
+  header.writeUInt16LE(16, 34); // Bits per sample
+  header.write("data", 36);
+  header.writeUInt32LE(pcmData.length, 40);
+  return Buffer.concat([header, pcmData]);
+}
+
 // Generated audio is returned in the contentBlocks
 for (const [index, block] of res.contentBlocks.entries()) {
-  if (block.type === "file" && block.mimeType?.startsWith("audio/")) {
-    const base64Data = block.data;
-    const extension = block.mimeType.split("/")[1] || "wav";
-    const filename = `generated_audio_${index}.${extension}`;
+  if (block.type === "file" && block.data) {
+    let audioBuffer = Buffer.from(block.data, "base64");
+    let filename = `generated_audio_${index}.wav`;
+
+    if (block.mimeType?.startsWith("audio/L16")) {
+      audioBuffer = addWavHeader(audioBuffer);
+    } else if (block.mimeType) {
+      const extension = block.mimeType.split("/")[1] || "wav";
+      filename = `generated_audio_${index}.${extension}`;
+    }
 
     // Save the audio to a file
-    fs.writeFileSync(filename, Buffer.from(base64Data, "base64"));
+    fs.writeFileSync(filename, audioBuffer);
     console.log(`[Saved audio to ${filename}]`);
   } else if (block.type === "text") {
     console.log(block.text);
