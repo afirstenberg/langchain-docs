@@ -593,7 +593,7 @@ for (const [index, block] of res.contentBlocks.entries()) {
   if (block.type === "file" && block.data) {
     const base64Data = block.data;
     // Determine the correct file extension from the MIME type
-    const mimeType = block.mimeType || "image/png";
+    const mimeType = (block.mimeType || "image/png").split(";")[0];
     const extension = mimeType.split("/")[1] || "png";
     const filename = `generated_image_${index}.${extension}`;
 
@@ -660,7 +660,9 @@ for (const [index, block] of res.contentBlocks.entries()) {
     if (block.mimeType?.startsWith("audio/L16")) {
       audioBuffer = addWavHeader(audioBuffer);
     } else if (block.mimeType) {
-      const extension = block.mimeType.split("/")[1] || "wav";
+      // Ignore parameters in the mimeType, such as "; rate=24000"
+      const mimeType = block.mimeType.split(";")[0];
+      const extension = mimeType.split("/")[1] || "wav";
       filename = `generated_audio_${index}.${extension}`;
     }
 
