@@ -457,12 +457,18 @@ const res = await llm.invoke("What is the square root of 144?");
 const reasoningBlocks = res.contentBlocks.filter((block) => block.type === "reasoning");
 reasoningBlocks.forEach((block) => {
   if (block.type === "reasoning") {
-    console.log("Thought:", block.text);
+    console.log("Thought:", block.reasoning);
   }
 });
 
 console.log("Answer:", res.text);
 ```
+
+<Note>
+  Thought blocks also include a `reasoningContentBlock` field. This contains the `ContentBlock` based on 
+  the underlying part sent by Gemini. While this is typically a text block, for multimodal models like 
+  Nano Banana Pro, it could be an image or other media block.
+</Note>
 
 ## API Reference
 
