@@ -606,6 +606,68 @@ for (const [index, block] of res.contentBlocks.entries()) {
 }
 ```
 
+## Speech Generation (TTS)
+
+Some Gemini models support generating speech (audio output). To enable this, 
+configure the `responseModalities` to include "AUDIO" and provide a 
+`speechConfig`.
+
+The `speechConfig` can be a 
+[full Gemini speech configuration object](https://ai.google.dev/api/generate-content#SpeechConfig), 
+but for most cases you just need to provide a string with a prebuilt 
+[voice name](https://ai.google.dev/gemini-api/docs/speech-generation#voices).
+
+```typescript
+import { ChatGoogle } from "@langchain/google";
+import * as fs from "fs";
+
+const llm = new ChatGoogle({
+  model: "gemini-2.5-flash-preview-tts",
+  responseModalities: ["AUDIO", "TEXT"],
+  speechConfig: "Zubenelgenubi", // Prebuilt voice name
+});
+
+const res = await llm.invoke("Say cheerfully: Have a wonderful day!");
+
+// Generated audio is returned in the contentBlocks
+for (const [index, block] of res.contentBlocks.entries()) {
+  if (block.type === "file" && block.mimeType?.startsWith("audio/")) {
+    const base64Data = block.data;
+    const extension = block.mimeType.split("/")[1] || "wav";
+    const filename = `generated_audio_${index}.${extension}`;
+
+    // Save the audio to a file
+    fs.writeFileSync(filename, Buffer.from(base64Data, "base64"));
+    console.log(`[Saved audio to ${filename}]`);
+  } else if (block.type === "text") {
+    console.log(block.text);
+  }
+}
+```
+
+### Multi-speaker TTS
+
+You can also configure multiple speakers for a single request. This is useful to have
+Gemini read a script. The simplified `speechConfig` for this requires you to assign
+a `speaker` to each pre-defined `name` representing the voice, and then use that
+speaker in the script.
+
+```typescript
+const multiSpeakerLlm = new ChatGoogle({
+  model: "gemini-2.5-flash-preview-tts",
+  responseModalities: ["AUDIO"],
+  speechConfig: [
+    { speaker: "Joe", name: "Kore" },
+    { speaker: "Jane", name: "Puck" },
+  ],
+});
+
+const res = await multiSpeakerLlm.invoke(`
+  Joe: How's it going today, Jane?
+  Jane: Not too bad, how about you?
+`);
+```
+
 ## API Reference
 
 For detailed documentation of all `ChatGoogle` features and configurations head to the 
