@@ -322,14 +322,19 @@ const llm = new ChatGoogle({
 ]);
 
 const res = await llm.invoke("Calculate the 100th Fibonacci number.");
-console.log(res.content);
+console.log(res.contentBlocks);
 ```
 
 ## Context caching
 
-Context caching allows you to pass some content to the model once, cache the input 
+By default, Gemini models do implicit context caching. If the start of the
+history that you send to Gemini exactly matches context that Gemini has in
+its cache, it will reduce the token cost for that request.
+
+You can also explicitly pass some content to the model once, cache the input 
 tokens, and then refer to the cached tokens for subsequent requests to reduce cost 
-and latency.
+and latency. Creating this explicit cache is not supported by LangChain, but
+if you have created the cache, you can reference it in your invocation.
 
 ```typescript
 import { ChatGoogle } from "@langchain/google";
