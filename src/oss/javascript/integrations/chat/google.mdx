@@ -202,6 +202,16 @@ const llm = new ChatGoogle({
 });
 ```
 
+### Model Configuration Best Practices
+
+While `ChatGoogle` supports standard model parameters like `temperature`, `topP`, and `topK`, 
+best practice with Gemini models is to leave these at their default values. The models 
+are highly tuned around these defaults.
+
+If you want to control the "randomness" or "creativity" of the model, it is recommended 
+to use specific instructions in your prompt or system prompt (e.g., "Be creative", 
+"Give a concise factual answer") rather than adjusting the temperature.
+
 ## Invocation
 
 ```typescript
