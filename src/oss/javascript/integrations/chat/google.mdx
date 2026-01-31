@@ -327,7 +327,12 @@ console.log(res);
 
 ## Tool calling
 
-`ChatGoogle` supports standard LangChain [tool calling](/oss/langchain/tools).
+`ChatGoogle` supports standard LangChain [tool calling](/oss/langchain/tools) as 
+well as Gemini-specific "Specialty Tools" (like Code Execution and Grounding).
+
+### Standard Tools
+
+You can use standard LangChain tools defined with Zod schemas.
 
 ```typescript
 import { ChatGoogle } from "@langchain/google";
@@ -352,7 +357,16 @@ const res = await llm.invoke("What is the weather in SF?");
 console.log(res.tool_calls);
 ```
 
-## Code execution
+### Specialty Tools
+
+Gemini offers several built-in tools for code execution and grounding.
+
+<Warning>
+  You cannot mix these "Specialty Tools" (Code Execution, Google Search, etc.) 
+  with standard LangChain tools (like the weather tool above) in the same request.
+</Warning>
+
+#### Code execution
 
 Gemini models support code execution, which allows the model to generate and run 
 Python code to solve complex problems.
@@ -372,36 +386,7 @@ const res = await llm.invoke("Calculate the 100th Fibonacci number.");
 console.log(res.contentBlocks);
 ```
 
-## Context caching
-
-By default, Gemini models do implicit context caching. If the start of the
-history that you send to Gemini exactly matches context that Gemini has in
-its cache, it will reduce the token cost for that request.
-
-You can also explicitly pass some content to the model once, cache the input 
-tokens, and then refer to the cached tokens for subsequent requests to reduce cost 
-and latency. Creating this explicit cache is not supported by LangChain, but
-if you have created the cache, you can reference it in your invocation.
-
-```typescript
-import { ChatGoogle } from "@langchain/google";
-
-const llm = new ChatGoogle({
-  model: "gemini-2.5-pro",
-});
-
-// Pass the cache name to the model
-const res = await llm.invoke("Summarize this document", {
-  cachedContent: "projects/123/locations/us-central1/cachedContents/456",
-});
-```
-
-## Grounding Results
-
-Grounding allows you to provide the model with access to real-world information, 
-reducing hallucinations and providing more up-to-date responses.
-
-### Grounding with Google Search
+#### Grounding with Google Search
 
 You can use the `googleSearch` tool to ground responses with Google Search.
 This is useful for questions about current events or specific facts.
@@ -425,7 +410,7 @@ const res = await llm.invoke("Who won the latest World Series?");
 console.log(res.text);
 ```
 
-### Grounding with URL Retrieval
+#### Grounding with URL Retrieval
 
 You can also ground responses using a specific URL.
 
@@ -445,7 +430,7 @@ const res = await llm.invoke(prompt);
 console.log(res.text);
 ```
 
-### Grounding with a data store
+#### Grounding with a data store
 
 If you are using Vertex AI (`platformType: "gcp"`), you can ground responses using 
 a Vertex AI Search data store.
@@ -474,6 +459,30 @@ const res = await llm.invoke(
   "What is the score of Argentina vs Bolivia football game?"
 );
 console.log(res.text);
+```
+
+## Context caching
+
+By default, Gemini models do implicit context caching. If the start of the
+history that you send to Gemini exactly matches context that Gemini has in
+its cache, it will reduce the token cost for that request.
+
+You can also explicitly pass some content to the model once, cache the input 
+tokens, and then refer to the cached tokens for subsequent requests to reduce cost 
+and latency. Creating this explicit cache is not supported by LangChain, but
+if you have created the cache, you can reference it in your invocation.
+
+```typescript
+import { ChatGoogle } from "@langchain/google";
+
+const llm = new ChatGoogle({
+  model: "gemini-2.5-pro",
+});
+
+// Pass the cache name to the model
+const res = await llm.invoke("Summarize this document", {
+  cachedContent: "projects/123/locations/us-central1/cachedContents/456",
+});
 ```
 
 ## Multimodal Requests
