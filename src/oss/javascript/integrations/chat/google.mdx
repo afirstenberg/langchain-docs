@@ -223,6 +223,126 @@ console.log(aiMsg.text);
 J'adore programmer.
 ```
 
+## Safety settings
+
+Gemini models have default safety settings that can be overridden. If you are 
+receiving lots of "Safety Warnings" from your models, you can try tweaking the 
+`safetySettings` attribute of the model.
+
+```typescript
+import { ChatGoogle } from "@langchain/google";
+
+const llm = new ChatGoogle({
+  model: "gemini-2.5-flash",
+  safetySettings: [
+    {
+      category: "HARM_CATEGORY_HARASSMENT",
+      threshold: "BLOCK_LOW_AND_ABOVE",
+    },
+  ],
+});
+```
+
+## Structured output
+
+You can use the `withStructuredOutput` method to get structured JSON output from the model.
+
+```typescript
+import { ChatGoogle } from "@langchain/google";
+import { z } from "zod";
+
+const llm = new ChatGoogle({
+  model: "gemini-2.5-flash",
+});
+
+const schema = z.object({
+  people: z.array(z.object({
+    name: z.string().describe("The name of the person"),
+    age: z.number().describe("The age of the person"),
+  })),
+});
+
+const structuredLlm = llm.withStructuredOutput(schema);
+
+const res = await structuredLlm.invoke("John is 25 and Jane is 30.");
+console.log(res);
+```
+
+```json
+{
+  "people": [
+    { "name": "John", "age": 25 },
+    { "name": "Jane", "age": 30 }
+  ]
+}
+```
+
+## Tool calling
+
+`ChatGoogle` supports standard LangChain [tool calling](/oss/langchain/tools).
+
+```typescript
+import { ChatGoogle } from "@langchain/google";
+import { tool } from "@langchain/core/tools";
+import { z } from "zod";
+
+const weatherTool = tool((input) => {
+  return "It is sunny and 75 degrees.";
+}, {
+  name: "get_weather",
+  description: "Get the weather for a location",
+  schema: z.object({
+    location: z.string(),
+  }),
+});
+
+const llm = new ChatGoogle({
+  model: "gemini-2.5-flash",
+}).bindTools([weatherTool]);
+
+const res = await llm.invoke("What is the weather in SF?");
+console.log(res.tool_calls);
+```
+
+## Code execution
+
+Gemini models support code execution, which allows the model to generate and run 
+Python code to solve complex problems.
+
+```typescript
+import { ChatGoogle } from "@langchain/google";
+
+const llm = new ChatGoogle({
+  model: "gemini-2.5-flash",
+}).bindTools([
+  {
+    codeExecution: {},
+  },
+]);
+
+const res = await llm.invoke("Calculate the 100th Fibonacci number.");
+console.log(res.content);
+```
+
+## Context caching
+
+Context caching allows you to pass some content to the model once, cache the input 
+tokens, and then refer to the cached tokens for subsequent requests to reduce cost 
+and latency.
+
+```typescript
+import { ChatGoogle } from "@langchain/google";
+
+const llm = new ChatGoogle({
+  model: "gemini-2.5-pro",
+});
+
+// Pass the cache name to the model
+const res = await llm.invoke("Summarize this document", {
+  cachedContent: "projects/123/locations/us-central1/cachedContents/456",
+});
+```
+
 ## Grounding Results
 
 Grounding allows you to provide the model with access to real-world information, 
