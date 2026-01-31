@@ -225,9 +225,10 @@ J'adore programmer.
 
 ## Safety settings
 
-Gemini models have default safety settings that can be overridden. If you are 
-receiving lots of "Safety Warnings" from your models, you can try tweaking the 
-`safetySettings` attribute of the model.
+By default, current versions of Gemini have safety settings turned off.
+
+If you want to enable safety settings for various categories, you can use
+the `safetySettings` attribute of the model.
 
 ```typescript
 import { ChatGoogle } from "@langchain/google";
