@@ -233,6 +233,21 @@ console.log(aiMsg.text);
 J'adore programmer.
 ```
 
+## Token usage
+
+The `usage_metadata` property on the response `AIMessage` allows you to inspect 
+token counts.
+
+```typescript
+const res = await llm.invoke("Hello, how are you?");
+
+console.log(res.usage_metadata);
+```
+
+```text
+{ input_tokens: 6, output_tokens: 7, total_tokens: 13 }
+```
+
 ## Safety settings
 
 By default, current versions of Gemini have safety settings turned off.
