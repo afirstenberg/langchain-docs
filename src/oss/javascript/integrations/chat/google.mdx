@@ -428,6 +428,42 @@ for (const [index, block] of res.contentBlocks.entries()) {
 
 ## Reasoning / Thinking
 
+Google's Gemini 2.5 and Gemini 3 models support "thinking" or "reasoning" steps. 
+These models may perform reasoning even if you don't explicitly configure it, 
+but the library will only return the reasoning summaries (thought blocks) if you 
+explicitly set a value for how much to reason/think.
+
+This library offers compatibility between models, allowing you to use unified parameters:
+
+- `maxReasoningTokens` (or `thinkingBudget`): Specifies the maximum number of tokens to use for reasoning. 
+  - `0`: Turns off reasoning (if supported).
+  - `-1`: Uses the model's default.
+  - `> 0`: Sets the specific token budget.
+
+- `reasoningEffort` (or `thinkingLevel`): Sets the relative effort.
+  - Values: `"minimal"`, `"low"`, `"medium"`, `"high"`.
+
+```typescript
+import { ChatGoogle } from "@langchain/google";
+
+const llm = new ChatGoogle({
+  model: "gemini-3-pro-preview",
+  reasoningEffort: "high",
+});
+
+const res = await llm.invoke("What is the square root of 144?");
+
+// The reasoning steps are available in the contentBlocks
+const reasoningBlocks = res.contentBlocks.filter((block) => block.type === "reasoning");
+reasoningBlocks.forEach((block) => {
+  if (block.type === "reasoning") {
+    console.log("Thought:", block.text);
+  }
+});
+
+console.log("Answer:", res.text);
+```
+
 ## API Reference
 
 For detailed documentation of all `ChatGoogle` features and configurations head to the 
