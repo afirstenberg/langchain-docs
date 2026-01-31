@@ -233,10 +233,14 @@ console.log(aiMsg.text);
 J'adore programmer.
 ```
 
-## Token usage
+## Response Metadata
 
-The `usage_metadata` property on the response `AIMessage` allows you to inspect 
-token counts.
+The `AIMessage` response contains metadata about the generation, including 
+token usage and log probabilities.
+
+### Token Usage
+
+The `usage_metadata` property allows you to inspect token counts.
 
 ```typescript
 const res = await llm.invoke("Hello, how are you?");
@@ -246,6 +250,22 @@ console.log(res.usage_metadata);
 
 ```text
 { input_tokens: 6, output_tokens: 7, total_tokens: 13 }
+```
+
+### Logprobs
+
+If you enable `logprobs` in the model configuration, they will be available in 
+the `response_metadata`.
+
+```typescript
+const llmWithLogprobs = new ChatGoogle({
+  model: "gemini-2.5-flash",
+  logprobs: 2, // Number of top candidates to return
+});
+
+const resWithLogprobs = await llmWithLogprobs.invoke("Hello");
+
+console.log(resWithLogprobs.response_metadata.logprobs_result);
 ```
 
 ## Safety settings
