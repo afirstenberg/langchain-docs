@@ -106,8 +106,8 @@ from langchain.agents import create_agent
 from langchain.agents.middleware import wrap_model_call, ModelRequest, ModelResponse
 
 
-basic_model = ChatOpenAI(model="gpt-4o-mini")
-advanced_model = ChatOpenAI(model="gpt-4o")
+basic_model = ChatOpenAI(model="gpt-4.1-mini")
+advanced_model = ChatOpenAI(model="gpt-4.1")
 
 @wrap_model_call
 def dynamic_model_selection(request: ModelRequest, handler) -> ModelResponse:
@@ -207,7 +207,7 @@ def handle_tool_errors(request, handler):
         )
 
 agent = create_agent(
-    model="gpt-4o",
+    model="gpt-4.1",
     tools=[search, get_weather],
     middleware=[handle_tool_errors]
 )
@@ -486,7 +486,7 @@ def user_role_prompt(request: ModelRequest) -> str:
     return base_prompt
 
 agent = create_agent(
-    model="gpt-4o",
+    model="gpt-4.1",
     tools=[web_search],
     middleware=[user_role_prompt],
     context_schema=Context
@@ -544,7 +544,7 @@ class ContactInfo(BaseModel):
     phone: str
 
 agent = create_agent(
-    model="gpt-4o-mini",
+    model="gpt-4.1-mini",
     tools=[search_tool],
     response_format=ToolStrategy(ContactInfo)
 )
@@ -565,7 +565,7 @@ result["structured_response"]
 from langchain.agents.structured_output import ProviderStrategy
 
 agent = create_agent(
-    model="gpt-4o",
+    model="gpt-4.1",
     response_format=ProviderStrategy(ContactInfo)
 )
 ```

@@ -497,7 +497,7 @@ agent = create_agent(
     middleware=[
         apply_step_config,
         SummarizationMiddleware(  # [!code highlight]
-            model="gpt-4o-mini",
+            model="gpt-4.1-mini",
             trigger=("tokens", 4000),
             keep=("messages", 10)
         )
@@ -779,7 +779,7 @@ agent = create_agent(
     middleware=[
         apply_step_config,
         SummarizationMiddleware(
-            model="gpt-4o-mini",
+            model="gpt-4.1-mini",
             trigger=("tokens", 4000),
             keep=("messages", 10)
         )

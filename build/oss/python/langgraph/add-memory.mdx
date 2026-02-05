@@ -813,7 +813,7 @@ items = store.search(
     from langgraph.store.memory import InMemoryStore
     from langgraph.graph import START, MessagesState, StateGraph
 
-    model = init_chat_model("gpt-4o-mini")
+    model = init_chat_model("gpt-4.1-mini")
 
     # Create store with semantic search enabled
     embeddings = init_embeddings("openai:text-embedding-3-small")
