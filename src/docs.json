@@ -1460,7 +1460,9 @@
                           "pages": [
                             "oss/javascript/integrations/providers/google",
                             "oss/javascript/integrations/chat/google",
-                            "oss/javascript/integrations/tools/google"
+                            "oss/javascript/integrations/tools/google",
+                            "oss/javascript/integrations/chat/google_generative_ai",
+                            "oss/javascript/integrations/chat/google_vertex_ai"
                           ]
                         },
                         {
